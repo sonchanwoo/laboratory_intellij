@@ -13,8 +13,8 @@ import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
-//@Transactional
-//@Rollback(value = false)
+@Transactional
+@Rollback(value = false)
 @Slf4j
 public class EntityTests1 {
 
@@ -22,18 +22,35 @@ public class EntityTests1 {
 	EntityManager em;
 
 	@Test
-	void testExist(){
+	void test(){
+		Team teamA = new Team("teamA");
+		Team teamB = new Team("teamB");
 
+		em.persist(teamA);//buffer.write처럼 이해하자
+		em.persist(teamB);
+
+		Member member1 = new Member("member1", 10, teamA);
+		Member member2 = new Member("member2", 20, teamA);
+		Member member3 = new Member("member3", 30, teamB);
+
+		em.persist(member1);
+		em.persist(member2);
+		em.persist(member3);
+
+		em.flush();//영속성 컨텍스트와 DB 동기화(차이점 적용)
+		em.clear();//em 비우기
 	}
-
 	@Test
-	@DisplayName("일단 관계 제외한 임시 클래스 만들어서, BaseEntity 잘 동작하나 확인겸, sql로그 확인겸, em사용법 숙지겸")
 	void test1(){
-		MemberTMP tmp = new MemberTMP();
-		tmp.setUsername("chanwoo");
-		tmp.setAge(30);
+		Team teamA = new Team("teamA");
 
-		em.persist(tmp);
+		em.persist(teamA);
+
+		Member member1 = new Member("member1", 10, teamA);
+
+		em.persist(member1);
+
+		em.flush();
+		em.clear();
 	}
-
 }
